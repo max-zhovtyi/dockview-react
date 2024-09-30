@@ -1,7 +1,7 @@
 const TextBlock = () => {
   return (
     <div className="editor">
-      Text Block.
+      Text Block
     </div>
   );
 };

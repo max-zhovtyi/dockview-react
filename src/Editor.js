@@ -1,7 +1,7 @@
 const Editor = () => {
   return (
     <div className="editor">
-      My iditor component.
+      My iditor component
     </div>
   );
 };

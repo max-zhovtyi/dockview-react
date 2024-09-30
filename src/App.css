@@ -1,7 +1,7 @@
 @import '~dockview/dist/styles/dockview.css';
 
 .App {
-  background-color: antiquewhite;
+  background-color: rgb(255, 159, 34);
   width: 800px;
   margin: 50px auto;
   height: 1200px;
@@ -13,4 +13,22 @@
   padding: 50px;
   background-color: tomato;
   border-radius: 12px;
+  margin: 10px;
+}
+
+.action-buttons {
+  background-color: aliceblue;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+}
+
+
+.btn {
+  background-color: #4343ec;
+  color: white;
+  border: 0;
+  height: 42px;
+  border-radius: 6px;
+  padding: 0 15px;
 }

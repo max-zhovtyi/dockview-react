@@ -2,25 +2,29 @@ import React, { useEffect, useRef, useState } from 'react';
 import { DockviewReact } from 'dockview';
 import './App.css';
 import Editor from './Editor';
+import Chat from './Chat';
 import TextBlock from './TextBlock';
 
 function App() {
   /**
-   * - add git!
-   * - add better styles and clean.
    * - TRY CORRECT DOCKVIEW-REACT import.
-   * - look again what I did.
+   * 
+   * 
+   * 
    * - improve "add".
-   * - add "remove".
+   *    - panels to "activePanels"
+   *    - currentPanels - "activePanelNames"
+   *    - get starting panels based on names.
+   *    - improve "getPanel" based on array
    * - move to "context".
+   * - add "remove".
+   * 
    * 
    * 
    * we need panels[] and components{ x: {}, y: {}} - they should be in state. As we need to change them later.
    * on load -> set main panels and components with what we need.
    * on button click -> change state.
    * 
-   * move to Context.
-   *
    * We need to add/remove panels:
    * 
    * dockviewApi.current.addPanel(x-panel)
@@ -28,15 +32,16 @@ function App() {
    * 
    * addPanel(key) - ex.addPanel(editorPanel)
    */
-
   const dockviewApi = useRef({});
-  const [dockviewComponents, setDockviewComponents] = useState({
+  // Set starting components.
+  const [panelComponents, setPenalComponents] = useState({
     editorPanel: () => <Editor />,
+    chatPanel: () => <Chat />,
   });
 
   const panels = [
     {
-      id: 'panel_1',
+      id: 'editor',
       component: 'editorPanel',
       title: 'Editor',
       position: {
@@ -44,8 +49,8 @@ function App() {
       },
     },
     {
-      id: 'panel_2',
-      component: 'editorPanel',
+      id: 'chat',
+      component: 'chatPanel',
       title: 'Chat',
       position: {
         direction: 'right',
@@ -54,25 +59,25 @@ function App() {
   ];
 
   useEffect(() => {
-    console.log('dockviewComponents: ', dockviewComponents);
+    console.log('panelComponents: ', panelComponents);
 
     const currentPanels = panels.map((item) => item.component);
     console.log('currentPanels: ', currentPanels);
 
-    // If componentKey does not have a panel, add the corresponding panel.
-    for (const [componentKey, value] of Object.entries(dockviewComponents)) {
-      console.log('componentKey:  ', componentKey);
+    // If key does not have a panel, add the corresponding panel.
+    for (const [key, value] of Object.entries(panelComponents)) {
+      console.log('key: ', key);
 
-      if (!currentPanels.includes(componentKey)) {
-        console.log(`${componentKey} is not in panels`);
+      if (!currentPanels.includes(key)) {
+        console.log(`"Event: ${key} is not in panels"`);
 
-        const panel = getPanel(componentKey);
+        const panel = getPanel(key);
         console.log('panel:  ', panel);
 
         dockviewApi.current.addPanel(panel);
       }
     }
-  }, [dockviewComponents]);
+  }, [panelComponents]);
 
   const getPanel = ($component) => {
     switch ($component) {
@@ -92,32 +97,30 @@ function App() {
   };
 
   const handleAddPanel = () => {
-    setDockviewComponents((prevState) => {
+    // Only update panel components.
+    setPenalComponents((prevState) => {
       return {
         ...prevState,
-        textBlock: () => <TextBlock />,
+        textBlock: () => <TextBlock />
       };
     });
   };
 
   return (
     <div className='App'>
-      <button onClick={handleAddPanel}>Add panel</button>
-
+      <div className='action-buttons'>
+        <button onClick={handleAddPanel} className='btn'>Add panel</button>
+      </div>
+      
       <DockviewReact
         className='dockview-theme-light'
-        components={dockviewComponents}
+        components={panelComponents}
         onReady={(event) => {
           panels.forEach((panel) => {
             event.api.addPanel(panel);
           });
 
           dockviewApi.current = event.api;
-          // event.api.addPanel();
-          // event.api.addPanel({ id: 'panel_2', component: 'editorPanel' });
-          // event.api.panels[0].update({ title: 'Max' });
-          // event.api.panels[0].api.setTitle('bb');
-          // console.log(event.api.panels);
         }}
       />
     </div>
