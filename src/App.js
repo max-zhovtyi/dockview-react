@@ -7,116 +7,135 @@ import TextBlock from './TextBlock';
 
 function App() {
   /**
-   * - TRY CORRECT DOCKVIEW-REACT import.
-   * 
+   * - read and commit
+   *    - test if useEffect runs each time I update different state
+   *    - activePanelsIds should be state.
+   *    - after adding new panel - update activePanelsIds
    * 
    * 
    * - improve "add".
-   *    - panels to "activePanels"
-   *    - currentPanels - "activePanelNames"
-   *    - get starting panels based on names.
-   *    - improve "getPanel" based on array
+   *    - think about what should be in context?
    * - move to "context".
    * - add "remove".
-   * 
-   * 
-   * 
+   *
+   *
+   *
    * we need panels[] and components{ x: {}, y: {}} - they should be in state. As we need to change them later.
    * on load -> set main panels and components with what we need.
    * on button click -> change state.
-   * 
+   *
    * We need to add/remove panels:
-   * 
+   *
    * dockviewApi.current.addPanel(x-panel)
    * componens.add(x-component)
-   * 
+   *
    * addPanel(key) - ex.addPanel(editorPanel)
    */
   const dockviewApi = useRef({});
+
   // Set starting components.
   const [panelComponents, setPenalComponents] = useState({
     editorPanel: () => <Editor />,
-    chatPanel: () => <Chat />,
+    chatPanel: () => <Chat />
   });
 
+  // For "Sidebar" we can use name "sidebarPanels".
   const panels = [
     {
-      id: 'editor',
+      id: 'editorPanel',
       component: 'editorPanel',
       title: 'Editor',
       position: {
-        direction: 'left',
-      },
+        direction: 'left'
+      }
     },
     {
-      id: 'chat',
+      id: 'chatPanel',
       component: 'chatPanel',
       title: 'Chat',
       position: {
-        direction: 'right',
-      },
+        direction: 'right'
+      }
     },
+    {
+      id: 'textBlockPanel',
+      component: 'textBlockPanel',
+      title: 'Text block',
+      position: {
+        direction: 'left'
+      }
+    }
   ];
 
-  useEffect(() => {
-    console.log('panelComponents: ', panelComponents);
+  let activePanelsIds = ['editorPanel', 'chatPanel'];
+  console.log('activePanelsIds: ', activePanelsIds);
 
-    const currentPanels = panels.map((item) => item.component);
-    console.log('currentPanels: ', currentPanels);
+  const activePanels = getPanels(activePanelsIds);
+
+  useEffect(() => {
+    console.log('panelComponents UPDATED: ', panelComponents);
 
     // If key does not have a panel, add the corresponding panel.
     for (const [key, value] of Object.entries(panelComponents)) {
       console.log('key: ', key);
 
-      if (!currentPanels.includes(key)) {
-        console.log(`"Event: ${key} is not in panels"`);
+      if (activePanelsIds.includes(key) === false) {
+        console.log(`"Event: ${key} is not in panels. Add panel ${key}"`);
 
         const panel = getPanel(key);
-        console.log('panel:  ', panel);
 
         dockviewApi.current.addPanel(panel);
       }
     }
   }, [panelComponents]);
 
-  const getPanel = ($component) => {
-    switch ($component) {
-      case 'textBlock':
-        return {
-          id: 'panel_3',
-          component: 'textBlock',
-          title: 'Text block',
-          position: {
-            direction: 'left',
-          }
-        }
-      case 'Mangoes':
-      case 'Papayas':
-      default:
-    }
-  };
+  function getPanel($id) {
+    // console.log("getPanel(): ", $id);
+
+    const item = panels.find((item) => {
+      return item.id === $id;
+    });
+    console.log('getPanel() - found item: ', item);
+
+    return item;
+  }
+
+  function getPanels($ids) {
+    // console.log("getPanels(): ", $ids);
+
+    const items = panels.filter((item) => {
+      if ($ids.includes(item.id)) {
+        return item;
+      }
+    });
+    console.log('getPanels() - found items: ', items);
+
+    return items;
+  }
 
   const handleAddPanel = () => {
     // Only update panel components.
     setPenalComponents((prevState) => {
       return {
         ...prevState,
-        textBlock: () => <TextBlock />
+        textBlockPanel: () => <TextBlock />
       };
     });
   };
 
   return (
-    <div className='App'>
-      <div className='action-buttons'>
-        <button onClick={handleAddPanel} className='btn'>Add panel</button>
+    <div className="App">
+      <div className="action-buttons">
+        <button onClick={handleAddPanel} className="btn">
+          Add panel
+        </button>
       </div>
-      
+
       <DockviewReact
-        className='dockview-theme-light'
+        className="dockview-theme-light"
         components={panelComponents}
         onReady={(event) => {
-          panels.forEach((panel) => {
+          activePanels.forEach((panel) => {
             event.api.addPanel(panel);
           });
 
